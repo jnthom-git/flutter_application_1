@@ -48,7 +48,7 @@ class _FirstPageState extends State<FirstPage> {
             //profile
             BottomNavigationBarItem(
               icon: Icon(Icons.person),
-              label: 'Profile',
+              label: 'Profil',
             ),
             //settings
             BottomNavigationBarItem(
