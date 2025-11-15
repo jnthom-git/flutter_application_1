@@ -1,30 +1,25 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/pages/first_page.dart';
-import 'package:flutter_application_1/pages/homepage.dart';
-import 'package:flutter_application_1/pages/settings.dart';
-
+import 'pages/main_navigation.dart';
 
 void main() {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  void onTap(){
-    print("User Tapped!");
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Pet Care App',
       debugShowCheckedModeBanner: false,
-      home: FirstPage(), 
-      routes: {
-        '/firstpage': (context) => FirstPage(),
-        '/homepage': (context) => Homepage(),
-        '/settings': (context) => settings(),
-      },
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        fontFamily: 'SF Pro',
+        scaffoldBackgroundColor: Colors.white,
+        useMaterial3: true,
+      ),
+      home: const MainNavigation(),
     );
   }
 }
