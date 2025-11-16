@@ -1,14 +1,15 @@
-// lib/widgets/floating_nav_bar.dart
-
+import 'dart:io';
 import 'package:flutter/material.dart';
 
 class FloatingNavBar extends StatelessWidget {
   final int currentIndex;
+  final String? userProfileImage;
   final Function(int) onTap;
 
   const FloatingNavBar({
     Key? key,
     required this.currentIndex,
+    this.userProfileImage,
     required this.onTap,
   }) : super(key: key);
 
@@ -46,9 +47,7 @@ class FloatingNavBar extends StatelessWidget {
             label: 'Health',
             index: 2,
           ),
-          _buildNavItem(
-            icon: Icons.person_rounded,
-            label: 'Profile',
+          _buildProfileNavItem(
             index: 3,
           ),
         ],
@@ -76,6 +75,54 @@ class FloatingNavBar extends StatelessWidget {
           icon,
           color: isSelected ? Colors.white : Colors.grey[600],
           size: 24,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildProfileNavItem({required int index}) {
+    final isSelected = currentIndex == index;
+    
+    print('FloatingNavBar - userProfileImage: $userProfileImage');
+    
+    return GestureDetector(
+      onTap: () => onTap(index),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.all(4),
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFFFF6B6B) : Colors.transparent,
+          borderRadius: BorderRadius.circular(20),
+        ),
+        child: Container(
+          width: 32,
+          height: 32,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: isSelected ? Colors.white : Colors.grey[300],
+          ),
+          child: ClipOval(
+            child: userProfileImage != null && userProfileImage!.isNotEmpty
+                ? Image.file(
+                    File(userProfileImage!),
+                    fit: BoxFit.cover,
+                    width: 32,
+                    height: 32,
+                    errorBuilder: (context, error, stackTrace) {
+                      print('Error loading nav bar profile image: $error');
+                      return Icon(
+                        Icons.person_rounded,
+                        color: isSelected ? const Color(0xFFFF6B6B) : Colors.grey[600],
+                        size: 20,
+                      );
+                    },
+                  )
+                : Icon(
+                    Icons.person_rounded,
+                    color: isSelected ? const Color(0xFFFF6B6B) : Colors.grey[600],
+                    size: 20,
+                  ),
+          ),
         ),
       ),
     );

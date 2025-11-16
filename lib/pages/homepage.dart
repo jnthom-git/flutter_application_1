@@ -1,5 +1,6 @@
 // lib/pages/HomePage.dart
 
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'models/pet.dart';
@@ -12,79 +13,48 @@ import 'add_task_page.dart';
 import 'pet_detail_page.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+  final String userName;
+  final String? userProfileImage;
+  final List<Pet> initialPets;
+
+  const HomePage({
+    Key? key,
+    required this.userName,
+    this.userProfileImage,
+    required this.initialPets,
+  }) : super(key: key);
 
   @override
   State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
-  // Sample data - will be replaced with real data later
   List<Pet> pets = [];
   List<Task> tasks = [];
-  String userName = "Catherine";
+  late String userName;
+  String? userProfileImage;
 
   @override
   void initState() {
     super.initState();
-    _loadSampleData();
+    userName = widget.userName;
+    userProfileImage = widget.userProfileImage;
+    pets = List.from(widget.initialPets);
+    _loadSampleTasks();
+    
+    // Debug print to check values
+    print('User name: $userName');
+    print('User profile image: $userProfileImage');
+    print('Number of pets: ${pets.length}');
+    for (var pet in pets) {
+      print('Pet: ${pet.name}, Image: ${pet.imagePath}');
+    }
   }
 
-  // Load sample data for testing
-  void _loadSampleData() {
-    // Add sample pets with default images
-    pets = [
-      Pet(
-        id: '1',
-        name: 'Anita',
-        species: 'Dog',
-        imagePath: 'assets/images/pets/anita.jpg',
-      ),
-      Pet(
-        id: '2',
-        name: 'Max',
-        species: 'Cat',
-        imagePath: 'assets/images/pets/max.jpeg', // Note: .jpeg extension
-      ),
-      Pet(
-        id: '3',
-        name: 'Wyn',
-        species: 'Dog',
-        imagePath: 'assets/images/pets/wyn.jpg',
-      ),
-    ];
-
-    // Add sample tasks for today
-    DateTime now = DateTime.now();
-    tasks = [
-      Task(
-        id: '1',
-        petId: '1',
-        petName: 'Anita',
-        type: TaskType.playTime,
-        title: 'Play Time',
-        scheduledTime: DateTime(now.year, now.month, now.day, 12, 0),
-      ),
-      Task(
-        id: '2',
-        petId: '1',
-        petName: 'Anita',
-        type: TaskType.feed,
-        title: 'Feed',
-        scheduledTime: DateTime(now.year, now.month, now.day, 8, 0),
-      ),
-      Task(
-        id: '3',
-        petId: '2',
-        petName: 'Max',
-        type: TaskType.bath,
-        title: 'Bath',
-        scheduledTime: DateTime(now.year, now.month, now.day, 9, 0),
-      ),
-    ];
-
-    // Sort tasks by time
-    tasks.sort((a, b) => a.scheduledTime.compareTo(b.scheduledTime));
+  // Load sample tasks only (pets come from onboarding)
+  void _loadSampleTasks() {
+    // No sample tasks - user will add their own
+    tasks = [];
   }
 
   // Get tasks for today only
@@ -452,6 +422,7 @@ class _HomePageState extends State<HomePage> {
                         ),
                         child: Row(
                           children: [
+                            // Pet profile picture
                             Container(
                               width: 30,
                               height: 30,
@@ -459,11 +430,41 @@ class _HomePageState extends State<HomePage> {
                                 shape: BoxShape.circle,
                                 color: Colors.grey[300],
                               ),
-                              child: const Icon(
-                                Icons.pets,
-                                size: 16,
-                                color: Colors.grey,
-                              ),
+                              child: pet.imagePath != null
+                                  ? ClipOval(
+                                      child: pet.imagePath!.startsWith('assets/')
+                                          ? Image.asset(
+                                              pet.imagePath!,
+                                              fit: BoxFit.cover,
+                                              width: 30,
+                                              height: 30,
+                                              errorBuilder: (context, error, stackTrace) {
+                                                return const Icon(
+                                                  Icons.pets,
+                                                  size: 16,
+                                                  color: Colors.grey,
+                                                );
+                                              },
+                                            )
+                                          : Image.file(
+                                              File(pet.imagePath!),
+                                              fit: BoxFit.cover,
+                                              width: 30,
+                                              height: 30,
+                                              errorBuilder: (context, error, stackTrace) {
+                                                return const Icon(
+                                                  Icons.pets,
+                                                  size: 16,
+                                                  color: Colors.grey,
+                                                );
+                                              },
+                                            ),
+                                    )
+                                  : const Icon(
+                                      Icons.pets,
+                                      size: 16,
+                                      color: Colors.grey,
+                                    ),
                             ),
                             const SizedBox(width: 8),
                             Text(

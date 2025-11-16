@@ -27,6 +27,8 @@ class PetCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    print('PetCard: ${pet.name}, Image path: ${pet.imagePath}');
+    
     return GestureDetector(
       onTap: onTap,
       child: Column(
@@ -37,20 +39,44 @@ class PetCard extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               color: Colors.grey[300],
-              image: pet.imagePath != null
-                  ? DecorationImage(
-                      image: _getImageProvider()!,
-                      fit: BoxFit.cover,
-                    )
-                  : null,
             ),
-            child: pet.imagePath == null
-                ? Icon(
-                    Icons.pets,
-                    size: 35,
-                    color: Colors.grey[600],
-                  )
-                : null,
+            child: ClipOval(
+              child: pet.imagePath != null && pet.imagePath!.isNotEmpty
+                  ? (pet.imagePath!.startsWith('assets/')
+                      ? Image.asset(
+                          pet.imagePath!,
+                          fit: BoxFit.cover,
+                          width: 70,
+                          height: 70,
+                          errorBuilder: (context, error, stackTrace) {
+                            print('Error loading pet image: $error');
+                            return Icon(
+                              Icons.pets,
+                              size: 35,
+                              color: Colors.grey[600],
+                            );
+                          },
+                        )
+                      : Image.file(
+                          File(pet.imagePath!),
+                          fit: BoxFit.cover,
+                          width: 70,
+                          height: 70,
+                          errorBuilder: (context, error, stackTrace) {
+                            print('Error loading pet image: $error');
+                            return Icon(
+                              Icons.pets,
+                              size: 35,
+                              color: Colors.grey[600],
+                            );
+                          },
+                        ))
+                  : Icon(
+                      Icons.pets,
+                      size: 35,
+                      color: Colors.grey[600],
+                    ),
+            ),
           ),
           const SizedBox(height: 8),
           Text(
